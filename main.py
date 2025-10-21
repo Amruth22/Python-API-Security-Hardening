@@ -26,7 +26,7 @@ def demo_rate_limiting():
     
     limiter = RateLimiter(max_requests=5, window=10)
     
-    print("\n📊 Rate Limit: 5 requests per 10 seconds")
+    print("\n[STATS] Rate Limit: 5 requests per 10 seconds")
     print("\nSimulating 7 requests from same IP:")
     
     for i in range(7):
@@ -34,9 +34,9 @@ def demo_rate_limiting():
         remaining = limiter.get_remaining("192.168.1.100")
         
         if allowed:
-            print(f"   Request {i+1}: ✅ Allowed (Remaining: {remaining})")
+            print(f"   Request {i+1}: [PASS] Allowed (Remaining: {remaining})")
         else:
-            print(f"   Request {i+1}: ❌ Blocked (Rate limit exceeded)")
+            print(f"   Request {i+1}: [FAIL] Blocked (Rate limit exceeded)")
 
 
 def demo_brute_force_protection():
@@ -45,21 +45,21 @@ def demo_brute_force_protection():
     
     protection = BruteForceProtection(max_attempts=3, lockout_duration=60)
     
-    print("\n🔒 Max login attempts: 3")
+    print("\n[LOCK] Max login attempts: 3")
     print("\nSimulating failed login attempts:")
     
     for i in range(5):
         if protection.is_locked("john_doe"):
             remaining = protection.get_lockout_time_remaining("john_doe")
-            print(f"   Attempt {i+1}: ❌ Account locked ({remaining:.0f}s remaining)")
+            print(f"   Attempt {i+1}: [FAIL] Account locked ({remaining:.0f}s remaining)")
         else:
             locked = protection.record_failed_attempt("john_doe", "192.168.1.100")
             remaining_attempts = protection.get_remaining_attempts("john_doe")
             
             if locked:
-                print(f"   Attempt {i+1}: 🔒 Account LOCKED!")
+                print(f"   Attempt {i+1}: [LOCK] Account LOCKED!")
             else:
-                print(f"   Attempt {i+1}: ❌ Failed (Remaining: {remaining_attempts})")
+                print(f"   Attempt {i+1}: [FAIL] Failed (Remaining: {remaining_attempts})")
 
 
 def demo_security_headers():
@@ -69,7 +69,7 @@ def demo_security_headers():
     headers_manager = SecurityHeaders()
     headers = headers_manager.get_headers()
     
-    print("\n🛡️  Configured Security Headers:")
+    print("\n[SHIELD]  Configured Security Headers:")
     for header, value in headers.items():
         print(f"   {header}: {value[:50]}...")
 
@@ -81,28 +81,28 @@ def demo_threat_detection():
     detector = ThreatDetector()
     
     # Test SQL injection
-    print("\n🔍 Testing SQL Injection Detection:")
+    print("\n[SEARCH] Testing SQL Injection Detection:")
     
     safe_input = "john_doe"
     malicious_input = "admin' OR '1'='1"
     
     print(f"   Safe input: '{safe_input}'")
-    print(f"   Result: {'❌ Threat!' if detector.detect_sql_injection(safe_input) else '✅ Safe'}")
+    print(f"   Result: {'[FAIL] Threat!' if detector.detect_sql_injection(safe_input) else '[PASS] Safe'}")
     
     print(f"\n   Malicious input: '{malicious_input}'")
-    print(f"   Result: {'❌ Threat Detected!' if detector.detect_sql_injection(malicious_input) else '✅ Safe'}")
+    print(f"   Result: {'[FAIL] Threat Detected!' if detector.detect_sql_injection(malicious_input) else '[PASS] Safe'}")
     
     # Test XSS
-    print("\n🔍 Testing XSS Detection:")
+    print("\n[SEARCH] Testing XSS Detection:")
     
     safe_html = "Hello World"
     malicious_html = "<script>alert('xss')</script>"
     
     print(f"   Safe HTML: '{safe_html}'")
-    print(f"   Result: {'❌ Threat!' if detector.detect_xss(safe_html) else '✅ Safe'}")
+    print(f"   Result: {'[FAIL] Threat!' if detector.detect_xss(safe_html) else '[PASS] Safe'}")
     
     print(f"\n   Malicious HTML: '{malicious_html}'")
-    print(f"   Result: {'❌ Threat Detected!' if detector.detect_xss(malicious_html) else '✅ Safe'}")
+    print(f"   Result: {'[FAIL] Threat Detected!' if detector.detect_xss(malicious_html) else '[PASS] Safe'}")
 
 
 def demo_ip_blocking():
@@ -112,7 +112,7 @@ def demo_ip_blocking():
     blocker = IPBlocker()
     
     # Block an IP
-    print("\n🚫 Blocking malicious IP:")
+    print("\n[DENIED] Blocking malicious IP:")
     blocker.block_ip("192.168.1.100", reason="Multiple failed login attempts")
     print(f"   IP 192.168.1.100 blocked")
     
@@ -121,13 +121,13 @@ def demo_ip_blocking():
     print(f"   Is blocked: {is_blocked}")
     
     # Whitelist an IP
-    print("\n✅ Whitelisting trusted IP:")
+    print("\n[PASS] Whitelisting trusted IP:")
     blocker.whitelist_ip("192.168.1.1")
     print(f"   IP 192.168.1.1 whitelisted")
     
     # Get stats
     stats = blocker.get_stats()
-    print(f"\n📊 IP Blocker Stats:")
+    print(f"\n[STATS] IP Blocker Stats:")
     print(f"   Blacklisted: {stats['blacklist_size']}")
     print(f"   Whitelisted: {stats['whitelist_size']}")
 
@@ -139,26 +139,26 @@ def demo_input_validation():
     validator = InputValidator()
     
     # Email validation
-    print("\n📧 Email Validation:")
+    print("\n[EMAIL] Email Validation:")
     emails = ["valid@example.com", "invalid-email", "test@test"]
     
     for email in emails:
         valid = validator.validate_email(email)
-        print(f"   {email}: {'✅ Valid' if valid else '❌ Invalid'}")
+        print(f"   {email}: {'[PASS] Valid' if valid else '[FAIL] Invalid'}")
     
     # Password validation
-    print("\n🔑 Password Validation:")
+    print("\n[KEY] Password Validation:")
     passwords = ["weak", "StrongPass123", "nodigits"]
     
     for pwd in passwords:
         result = validator.validate_password(pwd)
         if result['valid']:
-            print(f"   '{pwd}': ✅ Valid")
+            print(f"   '{pwd}': [PASS] Valid")
         else:
-            print(f"   '{pwd}': ❌ Invalid - {result['errors'][0]}")
+            print(f"   '{pwd}': [FAIL] Invalid - {result['errors'][0]}")
     
     # Input sanitization
-    print("\n🧹 Input Sanitization:")
+    print("\n[EMOJI] Input Sanitization:")
     dangerous_input = "<script>alert('xss')</script>"
     sanitized = validator.sanitize_string(dangerous_input)
     print(f"   Original: {dangerous_input}")
@@ -171,7 +171,7 @@ def demo_vulnerability_scanner():
     
     scanner = VulnerabilityScanner()
     
-    print("\n🔍 Scanning for vulnerabilities...")
+    print("\n[SEARCH] Scanning for vulnerabilities...")
     print("   (This is a demonstration - actual scanning requires running API)")
     
     # Simulate findings
@@ -205,21 +205,21 @@ def demo_endpoint_rate_limiting():
     limiter.add_limit('/auth/login', max_requests=5, window=60)
     limiter.add_limit('/api/upload', max_requests=10, window=60)
     
-    print("\n📊 Endpoint Rate Limits:")
+    print("\n[STATS] Endpoint Rate Limits:")
     print("   /api/data: 100 requests/minute")
     print("   /auth/login: 5 requests/minute")
     print("   /api/upload: 10 requests/minute")
     
     # Test
-    print("\n🔍 Testing /auth/login endpoint:")
+    print("\n[SEARCH] Testing /auth/login endpoint:")
     for i in range(7):
         allowed = limiter.is_allowed('/auth/login', '192.168.1.100')
         remaining = limiter.get_remaining('/auth/login', '192.168.1.100')
         
         if allowed:
-            print(f"   Request {i+1}: ✅ Allowed (Remaining: {remaining})")
+            print(f"   Request {i+1}: [PASS] Allowed (Remaining: {remaining})")
         else:
-            print(f"   Request {i+1}: ❌ Blocked")
+            print(f"   Request {i+1}: [FAIL] Blocked")
 
 
 def main():
@@ -257,7 +257,7 @@ def main():
         print()
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[FAIL] Error: {e}")
         import traceback
         traceback.print_exc()
 

@@ -38,17 +38,17 @@ class APISecurityTestCase(unittest.TestCase):
             allowed = limiter.is_allowed("192.168.1.100")
             self.assertTrue(allowed)
         
-        print("   ✅ First 3 requests allowed")
+        print("   [PASS] First 3 requests allowed")
         
         # 4th request should be blocked
         allowed = limiter.is_allowed("192.168.1.100")
         self.assertFalse(allowed)
-        print("   ✅ 4th request blocked (rate limit exceeded)")
+        print("   [PASS] 4th request blocked (rate limit exceeded)")
         
         # Check remaining
         remaining = limiter.get_remaining("192.168.1.100")
         self.assertEqual(remaining, 0)
-        print(f"   ✅ Remaining requests: {remaining}")
+        print(f"   [PASS] Remaining requests: {remaining}")
     
     # Test 2: Brute Force Protection
     def test_02_brute_force_protection(self):
@@ -63,18 +63,18 @@ class APISecurityTestCase(unittest.TestCase):
         
         # Account should be locked
         self.assertTrue(protection.is_locked("testuser"))
-        print("   ✅ Account locked after 3 failed attempts")
+        print("   [PASS] Account locked after 3 failed attempts")
         
         # Check remaining attempts
         remaining = protection.get_remaining_attempts("testuser")
         self.assertEqual(remaining, 0)
-        print(f"   ✅ Remaining attempts: {remaining}")
+        print(f"   [PASS] Remaining attempts: {remaining}")
         
         # Successful login should clear attempts
         protection.record_successful_attempt("testuser")
         protection.unlock_account("testuser")
         self.assertFalse(protection.is_locked("testuser"))
-        print("   ✅ Account unlocked after successful login")
+        print("   [PASS] Account unlocked after successful login")
     
     # Test 3: Security Headers
     def test_03_security_headers(self):
@@ -89,12 +89,12 @@ class APISecurityTestCase(unittest.TestCase):
         self.assertIn('X-Frame-Options', headers)
         self.assertIn('X-XSS-Protection', headers)
         
-        print(f"   ✅ {len(headers)} security headers configured")
+        print(f"   [PASS] {len(headers)} security headers configured")
         
         # Validate headers
         validation = validate_security_headers(headers)
         self.assertGreater(validation['score'], 0)
-        print(f"   ✅ Security score: {validation['score']:.0f}%")
+        print(f"   [PASS] Security score: {validation['score']:.0f}%")
     
     # Test 4: SQL Injection Detection
     def test_04_sql_injection_detection(self):
@@ -106,17 +106,17 @@ class APISecurityTestCase(unittest.TestCase):
         # Safe input
         safe = "john_doe"
         self.assertFalse(detector.detect_sql_injection(safe))
-        print(f"   ✅ Safe input passed: '{safe}'")
+        print(f"   [PASS] Safe input passed: '{safe}'")
         
         # Malicious input
         malicious = "admin' OR '1'='1"
         self.assertTrue(detector.detect_sql_injection(malicious))
-        print(f"   ✅ SQL injection detected: '{malicious}'")
+        print(f"   [PASS] SQL injection detected: '{malicious}'")
         
         # Another malicious pattern
         malicious2 = "1; DROP TABLE users--"
         self.assertTrue(detector.detect_sql_injection(malicious2))
-        print(f"   ✅ SQL injection detected: '{malicious2}'")
+        print(f"   [PASS] SQL injection detected: '{malicious2}'")
     
     # Test 5: XSS Detection
     def test_05_xss_detection(self):
@@ -128,17 +128,17 @@ class APISecurityTestCase(unittest.TestCase):
         # Safe input
         safe = "Hello World"
         self.assertFalse(detector.detect_xss(safe))
-        print(f"   ✅ Safe input passed: '{safe}'")
+        print(f"   [PASS] Safe input passed: '{safe}'")
         
         # Malicious input
         malicious = "<script>alert('xss')</script>"
         self.assertTrue(detector.detect_xss(malicious))
-        print(f"   ✅ XSS detected: '{malicious}'")
+        print(f"   [PASS] XSS detected: '{malicious}'")
         
         # Another XSS pattern
         malicious2 = "<img src=x onerror=alert('xss')>"
         self.assertTrue(detector.detect_xss(malicious2))
-        print(f"   ✅ XSS detected: '{malicious2}'")
+        print(f"   [PASS] XSS detected: '{malicious2}'")
     
     # Test 6: IP Blocking
     def test_06_ip_blocking(self):
@@ -152,22 +152,22 @@ class APISecurityTestCase(unittest.TestCase):
         
         # Check if blocked
         self.assertTrue(blocker.is_blocked("192.168.1.100"))
-        print("   ✅ IP blocked successfully")
+        print("   [PASS] IP blocked successfully")
         
         # Whitelist an IP
         blocker.whitelist_ip("192.168.1.1")
         self.assertFalse(blocker.is_blocked("192.168.1.1"))
-        print("   ✅ IP whitelisted successfully")
+        print("   [PASS] IP whitelisted successfully")
         
         # Temporary block
         blocker.block_ip("192.168.1.200", reason="Suspicious", duration=2)
         self.assertTrue(blocker.is_blocked("192.168.1.200"))
-        print("   ✅ Temporary block applied")
+        print("   [PASS] Temporary block applied")
         
         # Wait for expiry
         time.sleep(2.5)
         self.assertFalse(blocker.is_blocked("192.168.1.200"))
-        print("   ✅ Temporary block expired")
+        print("   [PASS] Temporary block expired")
     
     # Test 7: Input Validation
     def test_07_input_validation(self):
@@ -179,23 +179,23 @@ class APISecurityTestCase(unittest.TestCase):
         # Email validation
         self.assertTrue(validator.validate_email("test@example.com"))
         self.assertFalse(validator.validate_email("invalid-email"))
-        print("   ✅ Email validation working")
+        print("   [PASS] Email validation working")
         
         # Username validation
         self.assertTrue(validator.validate_username("john_doe"))
         self.assertFalse(validator.validate_username("ab"))  # Too short
-        print("   ✅ Username validation working")
+        print("   [PASS] Username validation working")
         
         # Password validation
         result = validator.validate_password("StrongPass123")
         self.assertTrue(result['valid'])
-        print("   ✅ Password validation working")
+        print("   [PASS] Password validation working")
         
         # Sanitization
         dangerous = "<script>alert('xss')</script>"
         sanitized = validator.sanitize_string(dangerous)
         self.assertNotIn("<script>", sanitized)
-        print(f"   ✅ Input sanitized: '{dangerous}' -> '{sanitized}'")
+        print(f"   [PASS] Input sanitized: '{dangerous}' -> '{sanitized}'")
     
     # Test 8: Threat Detection in Dict
     def test_08_threat_detection_dict(self):
@@ -212,7 +212,7 @@ class APISecurityTestCase(unittest.TestCase):
         
         threat = detector.detect_threats(safe_data)
         self.assertIsNone(threat)
-        print("   ✅ Safe data passed")
+        print("   [PASS] Safe data passed")
         
         # Malicious data
         malicious_data = {
@@ -222,7 +222,7 @@ class APISecurityTestCase(unittest.TestCase):
         
         threat = detector.detect_threats(malicious_data)
         self.assertIsNotNone(threat)
-        print(f"   ✅ Threat detected: {threat}")
+        print(f"   [PASS] Threat detected: {threat}")
     
     # Test 9: Endpoint Rate Limiting
     def test_09_endpoint_rate_limiting(self):
@@ -243,12 +243,12 @@ class APISecurityTestCase(unittest.TestCase):
         # 4th request should be blocked
         allowed = limiter.is_allowed('/auth/login', '192.168.1.100')
         self.assertFalse(allowed)
-        print("   ✅ Endpoint-specific limit enforced")
+        print("   [PASS] Endpoint-specific limit enforced")
         
         # /api/data should still allow requests
         allowed = limiter.is_allowed('/api/data', '192.168.1.100')
         self.assertTrue(allowed)
-        print("   ✅ Different endpoints have independent limits")
+        print("   [PASS] Different endpoints have independent limits")
     
     # Test 10: Security Middleware Integration
     def test_10_security_middleware_integration(self):
@@ -266,26 +266,26 @@ class APISecurityTestCase(unittest.TestCase):
             rate_limiter.is_allowed("192.168.1.100")
         
         self.assertFalse(rate_limiter.is_allowed("192.168.1.100"))
-        print("   ✅ Rate limiter working")
+        print("   [PASS] Rate limiter working")
         
         # Test brute force
         for i in range(3):
             brute_force.record_failed_attempt("user", "192.168.1.100")
         
         self.assertTrue(brute_force.is_locked("user"))
-        print("   ✅ Brute force protection working")
+        print("   [PASS] Brute force protection working")
         
         # Test threat detection
         threat = threat_detector.detect_threats("SELECT * FROM users")
         self.assertIsNotNone(threat)
-        print(f"   ✅ Threat detector working: {threat}")
+        print(f"   [PASS] Threat detector working: {threat}")
         
         # Test IP blocking
         ip_blocker.block_ip("192.168.1.100")
         self.assertTrue(ip_blocker.is_blocked("192.168.1.100"))
-        print("   ✅ IP blocker working")
+        print("   [PASS] IP blocker working")
         
-        print("   ✅ All security components integrated successfully")
+        print("   [PASS] All security components integrated successfully")
 
 
 def run_tests():
@@ -311,17 +311,17 @@ def run_tests():
         print(f"Success rate: {success_rate:.1f}%")
     
     if result.failures:
-        print("\n❌ FAILURES:")
+        print("\n[FAIL] FAILURES:")
         for test, traceback in result.failures:
             print(f"  - {test}")
     
     if result.errors:
-        print("\n💥 ERRORS:")
+        print("\n[EXPLOSION] ERRORS:")
         for test, traceback in result.errors:
             print(f"  - {test}")
     
     if not result.failures and not result.errors:
-        print("\n🎉 ALL TESTS PASSED! 🎉")
+        print("\n[EMOJI] ALL TESTS PASSED! [EMOJI]")
     
     print("=" * 60)
     
@@ -336,10 +336,10 @@ if __name__ == "__main__":
         success = run_tests()
         exit(0 if success else 1)
     except KeyboardInterrupt:
-        print("\n\n⚠️  Tests interrupted by user")
+        print("\n\n[WARNING]  Tests interrupted by user")
         exit(1)
     except Exception as e:
-        print(f"\n\n💥 Unexpected error: {e}")
+        print(f"\n\n[EXPLOSION] Unexpected error: {e}")
         import traceback
         traceback.print_exc()
         exit(1)
